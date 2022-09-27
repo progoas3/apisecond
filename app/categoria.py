@@ -2,13 +2,17 @@ from xmlrpc.client import Marshaller
 from flask import Flask,jsonify,request
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from waitress import serve
+
 #. python_modules/bin/activate
 #python app/categoria.py
-
+def create_app(): 
+    return app
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost:3306/principal'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:admin@35.184.165.166:3306/principal'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 
 db = SQLAlchemy(app)
@@ -46,7 +50,6 @@ class seguimiento(db.Model):
         self.hallazgo = hallazgo
 
 db.create_all()
-
 #Esquema Categoria
 class SeguimientoSchema(ma.Schema):
     class Meta:
@@ -87,7 +90,6 @@ def insert_seguimiento():
     observaciones = data['observaciones']
     pendientes = data['pendientes']
     hallazgo = data['hallazgo']
-    
     nuevo_registro = seguimiento(accion,numero_accion,proceso,correctiva,mejora,fecha_definicion,fecha_cierre_propuesta,fecha_cierre_real,eficaz,nueva_accion_al_no_ser_eficaz,observaciones,pendientes,hallazgo)
     
     db.session.add(nuevo_registro)
@@ -134,9 +136,9 @@ def update_seguimiento(numero_accion):
 
 
 #Mensaje de bienvenida
-@app.route('/', methods=['GET'])
+@app.route('/a', methods=['GET'])
 def index():
     return "<h1>Hola<h1>"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0',port=5000)
